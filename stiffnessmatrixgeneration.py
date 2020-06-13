@@ -25,16 +25,17 @@ def assembleGlobalStiffnessMatrix(mesh,k):
 				k			conductivity
 	'''
 	H=np.zeros((mesh.N*mesh.N, mesh.N*mesh.N))
-	'''for element in mesh.elements:
-		He=ElementStiffnessMatrix(element, k, mesh.N, mesh.L)
-		H[np.ix_([element.nodes],element.nodes)] += He'''
 	for element in mesh.elements:
+		He=ElementStiffnessMatrix(element, k, mesh.N, mesh.L)
+		H[np.ix_(element.nodes,element.nodes)] += He
+	'''for element in mesh.elements:
 		He=ElementStiffnessMatrix(element, k, mesh.N, mesh.L)
 		for i in range(np.shape(He)[0]):
 			for j in range(np.shape(He)[1]):
-				H[element.nodes[i],element.nodes[j]]=He[i,j]
+				H[element.nodes[i],element.nodes[j]]+=He[i,j]'''
 		
 	return H
+
 
 
 
@@ -46,7 +47,7 @@ def solveBVP(mesh, boundaries,k):
 
 	#assemble stiffnessmatrix
 	H=assembleGlobalStiffnessMatrix(mesh,k)
-	#print('H=',H)
+	print('H=',H)
 
 	#get Dirichlet boundary nodes
 	bottom, right, top, left = mesh.getBoundary()
@@ -96,14 +97,14 @@ def solveBVP(mesh, boundaries,k):
 	
 
 	A=H[np.ix_(freenodes,freenodes)]
-	print(A)
+	#print(A)
 
 	
 	#build RHS including Neumann BC
 	#print(rhs[freenodes])
 	rhs[freenodes]=rhs[freenodes] - H[np.ix_(freenodes,dirichletnodes)] @ (np.ones(len(dirichletnodes))*T)
 	#print(np.shape(rhs_subsystem))
-	print('rhs=',rhs)
+	#print('rhs=',rhs)
 	#print(H[np.ix_(freenodes,dirichletnodes)] @ (np.ones(len(dirichletnodes))*T))
 	
 
