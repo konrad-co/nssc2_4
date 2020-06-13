@@ -79,7 +79,6 @@ def nodeToCoordinate(node,N,L):
 
 
 
-
 def generateMesh(L, hz, N=10):
 	#N number of nodes in one direction, N=10 by default
 
@@ -120,7 +119,7 @@ def generateMesh(L, hz, N=10):
 		triangle_id+=1
 		elements.extend([meshelement_lower, meshelement_upper])
 
-		for j in range(N-2):
+		for j in range(1,N-2):
 			node_number=i*N+j
 			meshelement_lower=Triangle(triangle_id,[node_number, node_number+1, node_number+N],['inner','inner','inner'], hz)
 			triangle_id+=1
