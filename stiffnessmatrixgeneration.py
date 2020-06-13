@@ -1,5 +1,6 @@
 import numpy as np
 from meshgeneration import *
+from print_HTP import *
 
 
 def ElementStiffnessMatrix(Triangle, k,N, L):
@@ -27,13 +28,7 @@ def assembleGlobalStiffnessMatrix(mesh,k):
 	H=np.zeros((mesh.N*mesh.N, mesh.N*mesh.N))
 	for element in mesh.elements:
 		He=ElementStiffnessMatrix(element, k, mesh.N, mesh.L)
-		H[np.ix_(element.nodes,element.nodes)] += He
-	'''for element in mesh.elements:
-		He=ElementStiffnessMatrix(element, k, mesh.N, mesh.L)
-		for i in range(np.shape(He)[0]):
-			for j in range(np.shape(He)[1]):
-				H[element.nodes[i],element.nodes[j]]+=He[i,j]'''
-		
+		H[np.ix_(element.nodes,element.nodes)] += He		
 	return H
 
 
@@ -47,7 +42,6 @@ def solveBVP(mesh, boundaries,k):
 
 	#assemble stiffnessmatrix
 	H=assembleGlobalStiffnessMatrix(mesh,k)
-	print('H=',H)
 
 	#get Dirichlet boundary nodes
 	bottom, right, top, left = mesh.getBoundary()
@@ -69,7 +63,7 @@ def solveBVP(mesh, boundaries,k):
 				T=element.value
 	dirichletnodes=np.unique(np.array(dirichletnodes))
 
-	#get Neumann nodes
+	#get Neumann boundarynodes
 	neumannnodes=[]
 	q=0
 	for element in boundaries:
@@ -88,35 +82,26 @@ def solveBVP(mesh, boundaries,k):
 				q=element.value
 
 
-	rhs=np.zeros(mesh.N*mesh.N)
-	for node in neumannnodes:
-		rhs[node]-=nodalForce(mesh,q,k)
-
 	#extract free nodes
 	freenodes=list(set(range(mesh.N*mesh.N)).difference(dirichletnodes))
-	
-
-	A=H[np.ix_(freenodes,freenodes)]
-	#print(A)
 
 	
 	#build RHS including Neumann BC
-	#print(rhs[freenodes])
-	rhs[freenodes]=rhs[freenodes] - H[np.ix_(freenodes,dirichletnodes)] @ (np.ones(len(dirichletnodes))*T)
-	#print(np.shape(rhs_subsystem))
-	#print('rhs=',rhs)
-	#print(H[np.ix_(freenodes,dirichletnodes)] @ (np.ones(len(dirichletnodes))*T))
+	rhs=np.zeros(mesh.N*mesh.N)
+	for node in neumannnodes:
+		rhs[node]-=nodalForce(mesh,q,k)
 	
 
 	#solve the system
-
 	sol = np.ones(mesh.N*mesh.N)*T
-	#sol[freenodes] = np.linalg.solve(A, rhs_subsystem)
-	sol[freenodes]=np.linalg.solve(A, rhs[freenodes])
-	#print(sol[freenodes])
+	sol[freenodes]=np.linalg.solve(H[np.ix_(freenodes,freenodes)], rhs[freenodes]- H[np.ix_(freenodes,dirichletnodes)] @ (np.ones(len(dirichletnodes))*T))
 
-	#compute the remaining reaction forces... why?
-	Prf=H[np.ix_(dirichletnodes,freenodes)] @ sol[freenodes] + H[np.ix_(dirichletnodes,dirichletnodes)] @ sol[dirichletnodes]
+
+	#compute the remaining reaction forces and store them in rhs
+	rhs[dirichletnodes]=H[np.ix_(dirichletnodes,freenodes)] @ sol[freenodes] + H[np.ix_(dirichletnodes,dirichletnodes)] @ sol[dirichletnodes]
+
+	#print to output file
+	print_HTP(H,sol.reshape(mesh.N,mesh.N),rhs.reshape(mesh.N,mesh.N))
 
 	return sol
 
