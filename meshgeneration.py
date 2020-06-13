@@ -3,20 +3,22 @@ import numpy as np
 
 
 class Triangle:
-	def __init__(self, id, nodes, bndryedges, hz, tempgrad=np.zeros(2), flux=np.zeros(2)):
+	def __init__(self, id, nodes, bndryedges, hz, tempgrad=np.zeros(2), flux=np.zeros(2), area=0):
 		self.id=id 					# unique identification number of the element according to Figure 1 of the handout
 		self.nodes=nodes			# indices of the vertíces
 		self.bndryedges=bndryedges 	# array which specifies if the edges [1,2], [2,3], [3,1] are at the bottom/right/top/left boundary or inside the domain
 		self.hz=hz					# element thickness
 		self.tempgrad=tempgrad		# gradient of the temperature
 		self.flux=flux				# flux of the temperature
+		self.area=area
 
 class Mesh:
 	def __init__(self, L, elements, N):
 		self.L=L 								# length of the domain
 		self.elements=elements 					# list of triangles
 		self.number_elements=len(elements)
-		self.N=N 								# number of gridpoints in each direction
+		self.N=N 
+		calcArea(self)								# number of gridpoints in each direction
 
 	def getBoundary(self):
 		'''returns 4 lists containing the nodes of each boundary'''
@@ -56,7 +58,8 @@ class Mesh:
 				if element.bndryedges[2] == 'bottom':
 					bottomboundary.extend([element.nodes[2], element.nodes[0]])
 
-		return np.unique(np.array(bottomboundary)), np.unique(np.array(rightboundary)), np.unique(np.array(topboundary)), np.unique(np.array(leftboundary))
+		return bottomboundary,rightboundary,topboundary,leftboundary
+		#return np.unique(np.array(bottomboundary)), np.unique(np.array(rightboundary)), np.unique(np.array(topboundary)), np.unique(np.array(leftboundary))
 
 
 class BoundaryCondition:
@@ -71,7 +74,9 @@ class BoundaryCondition:
 def nodeToCoordinate(node,N,L):
 	x=(node%N)*L/(N-1)
 	y=(node-x)/N*L/(N-1)
-	return (x,y)
+	return np.array([x,y])
+
+
 
 
 
@@ -160,7 +165,15 @@ def generateMesh(L, hz, N=10):
 
 	return Mesh(L,elements,N)
 
+def calcArea(mesh):
+	for triangle in mesh.elements:
+		vertex1=nodeToCoordinate(triangle.nodes[0],mesh.N,mesh.L)
+		vertex2=nodeToCoordinate(triangle.nodes[1],mesh.N,mesh.L)
+		vertex3=nodeToCoordinate(triangle.nodes[2],mesh.N,mesh.L)
 
+		b=np.array([vertex2[1]-vertex3[1], vertex3[1]-vertex1[1], vertex1[1]-vertex2[1]])
+
+		triangle.area=(vertex1[0]*b[0]+vertex2[0]*b[1]+vertex3[0]*b[2])/2
 
 
 

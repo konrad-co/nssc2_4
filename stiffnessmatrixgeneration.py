@@ -9,31 +9,34 @@ def ElementStiffnessMatrix(Triangle, k,N, L):
 				L			length of the domain
 				hz			element thickness
 	'''
-	vertex1, vertex2, vertex3=Triangle.nodes
-	vertex1=nodeToCoordinate(vertex1,N,L)
-	vertex2=nodeToCoordinate(vertex2,N,L)
-	vertex3=nodeToCoordinate(vertex3,N,L)
+	vertex1=nodeToCoordinate(Triangle.nodes[0],N,L)
+	vertex2=nodeToCoordinate(Triangle.nodes[1],N,L)
+	vertex3=nodeToCoordinate(Triangle.nodes[2],N,L)
 
 
-	a=np.array([vertex2[0]*vertex3[1]-vertex3[0]*vertex2[1], vertex3[0]*vertex1[1]-vertex1[0]*vertex3[1], vertex1[0]*vertex2[1]-vertex2[0]*vertex1[0]])
 	b=np.array([vertex2[1]-vertex3[1], vertex3[1]-vertex1[1], vertex1[1]-vertex2[1]])
 	c=np.array([vertex3[0]-vertex2[0], vertex1[0]-vertex3[0], vertex2[0]-vertex1[0]])
 
-	area=vertex1[0]*b[0]+vertex2[0]*b[1]+vertex3[0]*b[2]
-
-	#He=k/(4*area*Triangle.hz)*np.array([[b[0]*b[0]+c[0]*c[0], b[0]*b[1]+c[0]*c[1], b[0]*b[2]+c[0]*c[2]], [b[1]*b[0]+c[1]*c[0], b[1]*b[1]+c[1]*c[1], b[1]*b[2]+c[1]*c[2]], [b[2]*b[0]+c[2]*c[0], b[2]*b[1]+c[2]*c[1], b[2]*b[2]+c[2]*c[2]]])
-	He=k/(4*area*Triangle.hz)*(np.outer(b,b)+np.outer(c,c))
+	He=k/(4*Triangle.area)*Triangle.hz*(np.outer(b,b)+np.outer(c,c))
 	return He
 
 def assembleGlobalStiffnessMatrix(mesh,k):
 	'''Input:	mesh 		underlying mesh
 				k			conductivity
 	'''
-	H=np.zeros((mesh.number_elements, mesh.number_elements))
+	H=np.zeros((mesh.N*mesh.N, mesh.N*mesh.N))
+	'''for element in mesh.elements:
+		He=ElementStiffnessMatrix(element, k, mesh.N, mesh.L)
+		H[np.ix_([element.nodes],element.nodes)] += He'''
 	for element in mesh.elements:
 		He=ElementStiffnessMatrix(element, k, mesh.N, mesh.L)
-		H[np.ix_(element.nodes,element.nodes)] += He
+		for i in range(np.shape(He)[0]):
+			for j in range(np.shape(He)[1]):
+				H[element.nodes[i],element.nodes[j]]=He[i,j]
+		
 	return H
+
+
 
 def solveBVP(mesh, boundaries,k):
 	'''Input: 		mesh 		# element of class Mesh
@@ -42,12 +45,8 @@ def solveBVP(mesh, boundaries,k):
 	'''
 
 	#assemble stiffnessmatrix
-	H=np.zeros((mesh.N*mesh.N, mesh.N*mesh.N))
-	for element in mesh.elements:
-		He=ElementStiffnessMatrix(element, k, mesh.N, mesh.L)
-		#print(He)
-		H[np.ix_(element.nodes,element.nodes)] += He
-		#print(np.ix_(element.nodes,element.nodes))
+	H=assembleGlobalStiffnessMatrix(mesh,k)
+	#print('H=',H)
 
 	#get Dirichlet boundary nodes
 	bottom, right, top, left = mesh.getBoundary()
@@ -87,37 +86,44 @@ def solveBVP(mesh, boundaries,k):
 				neumannnodes.extend(top)
 				q=element.value
 
-	#rhs=np.ones(mesh.N*mesh.N)
+
 	rhs=np.zeros(mesh.N*mesh.N)
 	for node in neumannnodes:
-		rhs[node]-=nodalForce(mesh,q)
+		rhs[node]-=nodalForce(mesh,q,k)
 
 	#extract free nodes
 	freenodes=list(set(range(mesh.N*mesh.N)).difference(dirichletnodes))
-	#print(freenodes)
+	
 
 	A=H[np.ix_(freenodes,freenodes)]
+	print(A)
 
+	
 	#build RHS including Neumann BC
+	#print(rhs[freenodes])
 	rhs[freenodes]=rhs[freenodes] - H[np.ix_(freenodes,dirichletnodes)] @ (np.ones(len(dirichletnodes))*T)
-	#print(rhs)
+	#print(np.shape(rhs_subsystem))
+	print('rhs=',rhs)
 	#print(H[np.ix_(freenodes,dirichletnodes)] @ (np.ones(len(dirichletnodes))*T))
+	
 
 	#solve the system
+
 	sol = np.ones(mesh.N*mesh.N)*T
-	sol[freenodes] = np.linalg.solve(A, rhs[freenodes])
+	#sol[freenodes] = np.linalg.solve(A, rhs_subsystem)
+	sol[freenodes]=np.linalg.solve(A, rhs[freenodes])
+	#print(sol[freenodes])
 
 	#compute the remaining reaction forces... why?
 	Prf=H[np.ix_(dirichletnodes,freenodes)] @ sol[freenodes] + H[np.ix_(dirichletnodes,dirichletnodes)] @ sol[dirichletnodes]
 
 	return sol
 
-def nodalForce(mesh,q):
+def nodalForce(mesh,q,k):
 	return mesh.elements[0].hz*mesh.L/(mesh.N-1)*q/2
 
 def calcLocalGradsAndFluxes(mesh,sol,k):
 	for triangle in mesh.elements:
-		vertex1, vertex2, vertex3=triangle.nodes
 		vertex1=nodeToCoordinate(triangle.nodes[0],mesh.N,mesh.L)
 		vertex2=nodeToCoordinate(triangle.nodes[1],mesh.N,mesh.L)
 		vertex3=nodeToCoordinate(triangle.nodes[2],mesh.N,mesh.L)
@@ -125,11 +131,13 @@ def calcLocalGradsAndFluxes(mesh,sol,k):
 		b=np.array([vertex2[1]-vertex3[1], vertex3[1]-vertex1[1], vertex1[1]-vertex2[1]])
 		c=np.array([vertex3[0]-vertex2[0], vertex1[0]-vertex3[0], vertex2[0]-vertex1[0]])
 
-		area=vertex1[0]*b[0]+vertex2[0]*b[1]+vertex3[0]*b[2]
-
-		grad=1/(2*area)*np.array([b,c]) @ sol[triangle.nodes]
+		grad=1/(2*triangle.area)*np.array([b,c]) @ sol[triangle.nodes]
 		triangle.tempgrad=grad
 		triangle.flux=-k*grad
+
+
+
+
 
 
 	
