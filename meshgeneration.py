@@ -72,8 +72,8 @@ class BoundaryCondition:
 
 
 def nodeToCoordinate(node,N,L):
-	j=(node%N)#*L/(N-1)
-	i=(node-j)/N#*L/(N-1)
+	j=(node%N)
+	i=(node-j)/N
 	return np.array([i*L/(N-1),j*L/(N-1)])
 
 
@@ -173,7 +173,7 @@ def calcArea(mesh):
 
 		b=np.array([vertex2[1]-vertex3[1], vertex3[1]-vertex1[1], vertex1[1]-vertex2[1]])
 
-		triangle.area=(vertex1[0]*b[0]+vertex2[0]*b[1]+vertex3[0]*b[2])/2
+		triangle.area=abs(vertex1[0]*b[0]+vertex2[0]*b[1]+vertex3[0]*b[2])/2
 
 
 
