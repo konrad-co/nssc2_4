@@ -33,14 +33,11 @@ def assembleGlobalStiffnessMatrix(mesh,k, V=0, elements_modify = [], c = 1):
 	#print("V=3", nodeToCoordinate(90, mesh.N, mesh.L, V=3))
 
 	H=np.zeros((mesh.N*mesh.N, mesh.N*mesh.N))
-	idx = 1
 	for element in mesh.elements:
-		if V == 4 & idx in elements_modify:
+		if V == 4 & element.id in elements_modify:
 			He = ElementStiffnessMatrix(element, k*c, mesh.N, mesh.L, V)
-			print(idx)
 		else:
 			He = ElementStiffnessMatrix(element, k, mesh.N, mesh.L, V)
-		idx += 1
 		H[np.ix_(element.nodes,element.nodes)] += He		
 	return H
 
@@ -102,7 +99,10 @@ def solveBVP(mesh, boundaries,k, V=0, elements_modify = [], c = 1):
 	#build RHS including Neumann BC
 	rhs=np.zeros(mesh.N*mesh.N)
 	for node in neumannnodes:
-		rhs[node]-=nodalForce(mesh,q,k)
+		if V == 4 & node in elements_modify:
+			rhs[node]-=nodalForce(mesh,q,k*c)
+		else:
+			rhs[node]-=nodalForce(mesh,q,k)
 	
 
 	#solve the system
