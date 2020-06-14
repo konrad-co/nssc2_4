@@ -57,7 +57,8 @@ the visualization of the fluxes look similar but with a negative sign, as Figure
 \end{figure}
 
 \subsubsection*{Variation 1}
-This variation considers a trapezoidal domain instead of a square. The boundary conditions remain the same. In contrast to the initial problem, we observe that the partial derivative in x direction is not 0 anymore and the gradients are not constant over the whole domain. This yields a different behavior of the temperature in the domain. At the left boundary, the temperature is higher than at the right boundary at a fixed value for the y coordinate. Summing up all local fluxes, we observe that it is equal to the applied Neumann boundary conditions at the bottom anymore.
+This variation considers a trapezoidal domain instead of a square. The boundary conditions remain the same. In contrast to the initial problem, we observe that the partial derivative in x direction is not 0 anymore and the gradients are not constant over the whole domain. This yields a different behavior of the temperature in the domain. At the left boundary, the temperature is higher than at the right boundary at a fixed value for the y coordinate.
+
 \begin{figure}
 	\centering
 	\includegraphics[scale=0.3]{temperaturefieldV1.png}
@@ -68,7 +69,41 @@ This variation considers a trapezoidal domain instead of a square. The boundary 
 \end{figure}
 
 \subsubsection*{Variation 2}
+The second variation \ref{plotsV2} uses a biased mesh wherethe domain is still a rectangular shape, but the spacing of the nodes is slightly changed and thus becomes non-equidistant across the domain.
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.3]{temperaturefieldV2.png}
+	\includegraphics[scale=0.3]{gradientfieldV2.png}
+	\includegraphics[scale=0.3]{fluxesV2.png}
+	\caption{Visualization of the temperature field, the gradient field and the fluxes for variation 2.}
+	\label{plotsV2}
+\end{figure}
+
+
 \subsubsection*{Variation 3}
+In the next variation, we created a domain from the shape of an annulus section. The Finite Element Method is obviously well suited to deal with free forms.
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.3]{temperaturefieldV3.png}
+	\includegraphics[scale=0.3]{gradientfieldV3.png}
+	\includegraphics[scale=0.3]{fluxesV3.png}
+	\caption{Visualization of the temperature field, the gradient field and the fluxes for variation 3.}
+	\label{plotsV3}
+\end{figure}
+
+
 \subsubsection*{Variation 4}
+In this final variation, the thermal conductivity $k$ was selectively altered according to the textfile assigned to our group. In our case, those elements had their $k$-value multiplied by $c=50$. The obvious result \ref{plotsV4} is an area in the gradient field where the change of temperature is significantly lower, i.e. through the higher conductivity less drop-off occurs.
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.3]{temperaturefieldV4.png}
+	\includegraphics[scale=0.3]{gradientfieldV4.png}
+	\includegraphics[scale=0.3]{fluxesV4.png}
+	\caption{Visualization of the temperature field, the gradient field and the fluxes for variation 4.}
+	\label{plotsV4}
+\end{figure}
 
 \end{document}
