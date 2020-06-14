@@ -3,16 +3,16 @@ from meshgeneration import *
 from print_HTP import *
 
 
-def ElementStiffnessMatrix(Triangle, k,N, L):
+def ElementStiffnessMatrix(Triangle, k,N, L, V=0):
 	'''Input: 	Triangle	element of the class Triangle
 				k			conductivity associated with the triangle
 				N 			number of gridpoints per direction
 				L			length of the domain
 				hz			element thickness
 	'''
-	vertex1=nodeToCoordinate(Triangle.nodes[0],N,L)
-	vertex2=nodeToCoordinate(Triangle.nodes[1],N,L)
-	vertex3=nodeToCoordinate(Triangle.nodes[2],N,L)
+	vertex1=nodeToCoordinate(Triangle.nodes[0],N,L, V)
+	vertex2=nodeToCoordinate(Triangle.nodes[1],N,L, V)
+	vertex3=nodeToCoordinate(Triangle.nodes[2],N,L, V)
 
 
 	b=np.array([vertex2[1]-vertex3[1], vertex3[1]-vertex1[1], vertex1[1]-vertex2[1]])
@@ -21,7 +21,7 @@ def ElementStiffnessMatrix(Triangle, k,N, L):
 	He=k/(4*Triangle.area)*Triangle.hz*(np.outer(b,b)+np.outer(c,c))
 	return He
 
-def assembleGlobalStiffnessMatrix(mesh,k, elements_modify = [], c = 1):
+def assembleGlobalStiffnessMatrix(mesh,k, V=0, elements_modify = [], c = 1):
 	'''Input:	mesh 		underlying mesh
 				k			conductivity
 	'''
@@ -35,10 +35,10 @@ def assembleGlobalStiffnessMatrix(mesh,k, elements_modify = [], c = 1):
 	H=np.zeros((mesh.N*mesh.N, mesh.N*mesh.N))
 	idx = 1
 	for element in mesh.elements:
-		if idx in elements_modify:
-			He = ElementStiffnessMatrix(element, k*c, mesh.N, mesh.L)
+		if V == 4 & idx in elements_modify:
+			He = ElementStiffnessMatrix(element, k*c, mesh.N, mesh.L, V)
 		else:
-			He = ElementStiffnessMatrix(element, k, mesh.N, mesh.L)
+			He = ElementStiffnessMatrix(element, k, mesh.N, mesh.L, V)
 		idx += 1
 		H[np.ix_(element.nodes,element.nodes)] += He		
 	return H
