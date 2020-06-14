@@ -47,7 +47,7 @@ Since the gradient and the flux are connected by the constitutive law,
 \begin{align*}
 q_i=-k\frac{\partial }{\partial x_i}T,
 \end{align*}
-the visualization of the fluxes look similar but with a negative sign, as Figure \ref{fluxes} demonstrates. Inspecting the right hand side of the LSE that has been solved to obtain the solution, one can see that the forces applied to the nodes at the top and at the bottom boundary sum up to 0. 
+the visualization of the fluxes look similar but with a negative sign, as Figure \ref{fluxes} demonstrates. Summing up all local fluxes, we observe that it is equal to the applied Neumann boundary conditions at the bottom.
 
 \begin{figure}
 	\centering
@@ -56,5 +56,19 @@ the visualization of the fluxes look similar but with a negative sign, as Figure
 	\label{fluxes}
 \end{figure}
 
+\subsubsection*{Variation 1}
+This variation considers a trapezoidal domain instead of a square. The boundary conditions remain the same. In contrast to the initial problem, we observe that the partial derivative in x direction is not 0 anymore and the gradients are not constant over the whole domain. This yields a different behavior of the temperature in the domain. At the left boundary, the temperature is higher than at the right boundary at a fixed value for the y coordinate. Summing up all local fluxes, we observe that it is equal to the applied Neumann boundary conditions at the bottom anymore.
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.3]{temperaturefieldV1.png}
+	\includegraphics[scale=0.3]{gradientfieldV1.png}
+	\includegraphics[scale=0.3]{fluxesV1.png}
+	\caption{Visualization of the temperature field, the gradient field and the fluxes for variation 1.}
+	\label{plotsV1}
+\end{figure}
+
+\subsubsection*{Variation 2}
+\subsubsection*{Variation 3}
+\subsubsection*{Variation 4}
 
 \end{document}
