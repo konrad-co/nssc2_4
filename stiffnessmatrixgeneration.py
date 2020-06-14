@@ -121,7 +121,7 @@ def solveBVP(mesh, boundaries,k, V=0, elements_modify = [], c = 1):
 def nodalForce(mesh,q,k):
 	return mesh.elements[0].hz*mesh.L/(mesh.N-1)*q/2
 
-def calcLocalGradsAndFluxes(mesh,sol,k,V=0, elements_modif=[], c=1):
+def calcLocalGradsAndFluxes(mesh,sol,k,V=0, elements_modify=[], c=1):
 	for triangle in mesh.elements:
 		vertex1=nodeToCoordinate(triangle.nodes[0],mesh.N,mesh.L)
 		vertex2=nodeToCoordinate(triangle.nodes[1],mesh.N,mesh.L)
@@ -134,7 +134,7 @@ def calcLocalGradsAndFluxes(mesh,sol,k,V=0, elements_modif=[], c=1):
 
 		grad=1/(2*triangle.area)*np.array([b,cvec]) @ sol[triangle.nodes]
 		triangle.tempgrad=grad
-		if V==4 and element in elements_modify:
+		if V==4 and triangle in elements_modify:
 			triangle.flux=-k*c*grad
 		else:
 			triangle.flux=-k*grad
