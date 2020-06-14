@@ -6,8 +6,7 @@ import matplotlib.lines as lines
 coordinates=nodeToCoordinate(np.array(range(N*N)).reshape((N,N)),N,L)
 #edges=np.ix_(coordinates[0],coordinates[0])
 #print(edges)
-print(np.shape(coordinates))
-print(coordinates)
+
 
 '''
 fig,ax = plt.subplots()
@@ -46,17 +45,38 @@ plt.savefig('temperaturefield.png')
 
 #calculating the element centroids
 centroids=[]
+gradients=[]
+fluxes=[]
 for element in mesh.elements:
 	centroids.append((nodeToCoordinate(element.nodes[0],N,L)+nodeToCoordinate(element.nodes[1],N,L)+nodeToCoordinate(element.nodes[2],N,L))/3)
+	gradients.append(element.tempgrad)
+	fluxes.append(element.flux)
+
+xcentroids,ycentroids=zip(*centroids)
+xgradients,ygradients=zip(*gradients)
+xfluxes,yfluxes=zip(*fluxes)
 
 fig,ax = plt.subplots()
 ax.set_xticks(np.linspace(0,L,N))
 ax.set_yticks(np.linspace(0,L,N))
 ax.set(xlim=(0,L), ylim=(0,L))
 ax.set_aspect('equal')
-for element in mesh.elements:
-	#plt.quiver([centroids[element.id][0],centroids[element.id][1]],element.tempgrad[0],element.tempgrad[1])
+plt.quiver(xcentroids,ycentroids,ygradients,xgradients)
+#ax.quiverkey(plt.quiver(xcentroids,ycentroids,ygradients,xgradients), X=0.3, Y=1.1, U=5000, label='Quiver key, length = 10', labelpos='E')
 plt.xlabel("x in m")
 plt.ylabel('y in m')
 plt.title("Gradient field")
 plt.savefig('gradientfield.png')
+
+
+fig,ax = plt.subplots()
+ax.set_xticks(np.linspace(0,L,N))
+ax.set_yticks(np.linspace(0,L,N))
+ax.set(xlim=(0,L), ylim=(0,L))
+ax.set_aspect('equal')
+plt.quiver(xcentroids,ycentroids,yfluxes,xfluxes)
+plt.xlabel("x in m")
+plt.ylabel('y in m')
+plt.title("Fluxes")
+plt.savefig('fluxes.png')
+
