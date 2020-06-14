@@ -71,10 +71,22 @@ class BoundaryCondition:
 
 
 
-def nodeToCoordinate(node,N,L):
-	j=(node%N)
-	i=(node-j)/N
-	return np.array([i*L/(N-1),j*L/(N-1)])
+def nodeToCoordinate(node,N,L, V=0):
+	if V==1:
+		j=(node%N)
+		i=(node-j)//N
+		return np.array([(i*L/(N-1)), (j*L/(N-1)) / (1+(i/(N-1))) + (L/4)*(i/(N-1))])
+	if V==2:
+		j=(node%N)
+		i=(node-j)/N
+		y_reg = i * L / (N - 1)
+		x_reg = j * L / (N - 1)
+		B = y_reg / (2*L)
+		return np.array([i * L / (N - 1), x_reg * ((B * x_reg) / L - B + 1)])
+	else:
+		j=(node%N)
+		i=(node-j)/N
+		return np.array([i*L/(N-1), j*L/(N-1)])
 
 
 

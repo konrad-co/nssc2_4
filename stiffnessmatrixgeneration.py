@@ -25,6 +25,15 @@ def assembleGlobalStiffnessMatrix(mesh,k):
 	'''Input:	mesh 		underlying mesh
 				k			conductivity
 	'''
+
+	# Test variations of coordinates
+	#print("Upper right")
+	#print("V=0", nodeToCoordinate(99, mesh.N, mesh.L, V=0))
+	#print("V=1", nodeToCoordinate(99, mesh.N, mesh.L, V=1))
+	#print("Upper left")
+	#print("V=0", nodeToCoordinate(90, mesh.N, mesh.L, V=0))
+	#print("V=1", nodeToCoordinate(90, mesh.N, mesh.L, V=1))
+
 	H=np.zeros((mesh.N*mesh.N, mesh.N*mesh.N))
 	for element in mesh.elements:
 		He=ElementStiffnessMatrix(element, k, mesh.N, mesh.L)
