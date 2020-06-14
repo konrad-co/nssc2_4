@@ -34,7 +34,7 @@ def assembleGlobalStiffnessMatrix(mesh,k, V=0, elements_modify = [], c = 1):
 
 	H=np.zeros((mesh.N*mesh.N, mesh.N*mesh.N))
 	for element in mesh.elements:
-		if V == 4 & element.id in elements_modify:
+		if V == 4 and element.id in elements_modify:
 			He = ElementStiffnessMatrix(element, k*c, mesh.N, mesh.L, V)
 		else:
 			He = ElementStiffnessMatrix(element, k, mesh.N, mesh.L, V)
