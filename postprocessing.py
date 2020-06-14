@@ -43,7 +43,7 @@ plt.savefig('temperaturefield.png')
 
 
 
-#calculating the element centroids
+#calculating the element centroids and storing local gradients/fluxes
 centroids=[]
 gradients=[]
 fluxes=[]
