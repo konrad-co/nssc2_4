@@ -4,6 +4,7 @@ from importdata import *
 
 
 N=10
+#print(elements_modify)
 
 mesh = generateMesh(L,hz,N)
 
