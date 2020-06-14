@@ -29,7 +29,7 @@ plt.show()
 fig,ax = plt.subplots()
 ax.set_xticks(np.linspace(0,L,N))
 ax.set_yticks(np.linspace(0,L,N))
-ax.set(xlim=(0,1*L), ylim=(0,1*L)) # V3 goes beyond the limits 0,L?
+ax.set(xlim=(0,1*L), ylim=(0,1*L)) # V3 goes beyond the limits 0,L
 ax.set_aspect('equal')
 #plt.grid(xdata=np.linspace(0,L,N, endpoint=True),ydata=np.linspace(0,L,N, endpoint=True))
 plt.pcolormesh(coordinates[0],coordinates[1],sol.reshape((N,N),order='F'))
@@ -48,7 +48,7 @@ centroids=[]
 gradients=[]
 fluxes=[]
 for element in mesh.elements:
-	centroids.append((nodeToCoordinate(element.nodes[0],N,L)+nodeToCoordinate(element.nodes[1],N,L)+nodeToCoordinate(element.nodes[2],N,L))/3)
+	centroids.append((nodeToCoordinate(element.nodes[0],N,L, V=0)+nodeToCoordinate(element.nodes[1],N,L, V=0)+nodeToCoordinate(element.nodes[2],N,L, V=0))/3)
 	gradients.append(element.tempgrad)
 	fluxes.append(element.flux)
 
