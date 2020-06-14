@@ -16,10 +16,11 @@ Nr=BoundaryCondition('right', 'Neumann', 0)
 sol=solveBVP(mesh, [Dt,Nb,Nl,Nr], k)
 
 
+#calculate gradients and fluxes and store them for each triangle
 calcLocalGradsAndFluxes(mesh,sol,k)
 
 
-
-#for triangle in mesh.elements:
-	#print(triangle.tempgrad)
+'''
+for triangle in mesh.elements:
+	print(np.sum(triangle.tempgrad))'''
 
