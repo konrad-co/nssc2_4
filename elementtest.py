@@ -10,7 +10,7 @@ mesh = generateMesh(L,hz,N)
 
 
 Dt=BoundaryCondition('top', 'Dirichlet' ,bc_top)
-Nb=BoundaryCondition('bottom', 'Neumann', bc_bottom)
+Nb=BoundaryCondition('bottom', 'Neumann', bc_bottom/k)
 Nl=BoundaryCondition('left', 'Neumann', 0)
 Nr=BoundaryCondition('right', 'Neumann', 0)
 
