@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as lines
 
 #useful data
-coordinates=nodeToCoordinate(np.array(range(N*N)).reshape((N,N)),N,L, V=3)
+coordinates=nodeToCoordinate(np.array(range(N*N)).reshape((N,N)),N,L, V=0)
 #edges=np.ix_(coordinates[0],coordinates[0])
 #print(edges)
 
@@ -29,7 +29,7 @@ plt.show()
 fig,ax = plt.subplots()
 ax.set_xticks(np.linspace(0,L,N))
 ax.set_yticks(np.linspace(0,L,N))
-ax.set(xlim=(0,1.5*L), ylim=(0,1.5*L)) # V3 goes beyond the limits 0,L?
+ax.set(xlim=(0,1*L), ylim=(0,1*L)) # V3 goes beyond the limits 0,L?
 ax.set_aspect('equal')
 #plt.grid(xdata=np.linspace(0,L,N, endpoint=True),ydata=np.linspace(0,L,N, endpoint=True))
 plt.pcolormesh(coordinates[0],coordinates[1],sol.reshape((N,N),order='F'))
