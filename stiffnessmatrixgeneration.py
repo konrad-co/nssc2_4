@@ -21,7 +21,7 @@ def ElementStiffnessMatrix(Triangle, k,N, L, V=0):
 	He=k/(4*Triangle.area)*Triangle.hz*(np.outer(b,b)+np.outer(c,c))
 	return He
 
-def assembleGlobalStiffnessMatrix(mesh,k, V=0, elements_modify = [], c = 1):
+def assembleGlobalStiffnessMatrix(mesh,k, V=3, elements_modify = [], c = 1):
 	'''Input:	mesh 		underlying mesh
 				k			conductivity
 	'''

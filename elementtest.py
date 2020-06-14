@@ -15,7 +15,7 @@ Nl=BoundaryCondition('left', 'Neumann', 0)
 Nr=BoundaryCondition('right', 'Neumann', 0)
 
 
-sol=solveBVP(mesh, [Dt,Nb,Nl,Nr], k, 4, elements_modify, c)
+sol=solveBVP(mesh, [Dt,Nb,Nl,Nr], k, 3, elements_modify, c)
 
 
 #calculate gradients and fluxes and store them for each triangle
