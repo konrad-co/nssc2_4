@@ -75,7 +75,8 @@ def nodeToCoordinate(node,N,L, V=0):
 	if V==1:
 		j=(node%N)
 		i=(node-j)//N
-		return np.array([(i*L/(N-1)), (j*L/(N-1)) / (1+(i/(N-1))) + (L/4)*(i/(N-1))])
+		return np.array([((i-j/2)*L/(N-1)), ((j)*L/(N-1))])
+		#return np.array([(i*L/(N-1)), (j*L/(N-1)) / (1+(i/(N-1))) + (L/4)*(i/(N-1))])
 	if V==2:
 		j=(node%N)
 		i=(node-j)/N
