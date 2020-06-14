@@ -123,16 +123,18 @@ def nodalForce(mesh,q,k):
 
 def calcLocalGradsAndFluxes(mesh,sol,k,V=0, elements_modify=[], c=1):
 	for triangle in mesh.elements:
-		vertex1=nodeToCoordinate(triangle.nodes[0],mesh.N,mesh.L)
-		vertex2=nodeToCoordinate(triangle.nodes[1],mesh.N,mesh.L)
-		vertex3=nodeToCoordinate(triangle.nodes[2],mesh.N,mesh.L)
+		vertex1=nodeToCoordinate(triangle.nodes[0],mesh.N,mesh.L,V)
+		vertex2=nodeToCoordinate(triangle.nodes[1],mesh.N,mesh.L,V)
+		vertex3=nodeToCoordinate(triangle.nodes[2],mesh.N,mesh.L,V)
 
 		b=np.array([vertex2[1]-vertex3[1], vertex3[1]-vertex1[1], vertex1[1]-vertex2[1]])
 		cvec=np.array([vertex3[0]-vertex2[0], vertex1[0]-vertex3[0], vertex2[0]-vertex1[0]])
 
 
+		b=np.array([vertex2[1]-vertex3[1], vertex3[1]-vertex1[1], vertex1[1]-vertex2[1]])
+		area=abs(vertex1[0]*b[0]+vertex2[0]*b[1]+vertex3[0]*b[2])/2
 
-		grad=1/(2*triangle.area)*np.array([b,cvec]) @ sol[triangle.nodes]
+		grad=1/(2*area)*np.array([b,cvec]) @ sol[triangle.nodes]
 		triangle.tempgrad=grad
 		if V==4 and triangle in elements_modify:
 			triangle.flux=-k*c*grad
