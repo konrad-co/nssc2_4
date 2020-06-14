@@ -19,7 +19,7 @@ sol=solveBVP(mesh, [Dt,Nb,Nl,Nr], k, 3, elements_modify, c)
 
 
 #calculate gradients and fluxes and store them for each triangle
-calcLocalGradsAndFluxes(mesh,sol,k)
+calcLocalGradsAndFluxes(mesh,sol,k,4,elements_modify,c)
 
 
 '''
