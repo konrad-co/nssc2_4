@@ -37,6 +37,7 @@ def assembleGlobalStiffnessMatrix(mesh,k, V=0, elements_modify = [], c = 1):
 	for element in mesh.elements:
 		if V == 4 & idx in elements_modify:
 			He = ElementStiffnessMatrix(element, k*c, mesh.N, mesh.L, V)
+			print(idx)
 		else:
 			He = ElementStiffnessMatrix(element, k, mesh.N, mesh.L, V)
 		idx += 1
@@ -46,14 +47,14 @@ def assembleGlobalStiffnessMatrix(mesh,k, V=0, elements_modify = [], c = 1):
 
 
 
-def solveBVP(mesh, boundaries,k):
+def solveBVP(mesh, boundaries,k, V=0, elements_modify = [], c = 1):
 	'''Input: 		mesh 		# element of class Mesh
 					rhs			# vector containing the right hand side of the system
 					boundaries 	# list of elements of the class BoundaryCondition
 	'''
 
 	#assemble stiffnessmatrix
-	H=assembleGlobalStiffnessMatrix(mesh,k)
+	H=assembleGlobalStiffnessMatrix(mesh,k, V, elements_modify, c)
 
 	#get Dirichlet boundary nodes
 	bottom, right, top, left = mesh.getBoundary()
