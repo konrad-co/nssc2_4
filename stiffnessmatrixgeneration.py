@@ -27,12 +27,10 @@ def assembleGlobalStiffnessMatrix(mesh,k, elements_modify = [], c = 1):
 	'''
 
 	# Test variations of coordinates
-	#print("Upper right")
 	#print("V=0", nodeToCoordinate(99, mesh.N, mesh.L, V=0))
-	#print("V=1", nodeToCoordinate(99, mesh.N, mesh.L, V=1))
-	#print("Upper left")
+	#print("V=3", nodeToCoordinate(99, mesh.N, mesh.L, V=3))
 	#print("V=0", nodeToCoordinate(90, mesh.N, mesh.L, V=0))
-	#print("V=1", nodeToCoordinate(90, mesh.N, mesh.L, V=1))
+	#print("V=3", nodeToCoordinate(90, mesh.N, mesh.L, V=3))
 
 	H=np.zeros((mesh.N*mesh.N, mesh.N*mesh.N))
 	idx = 1

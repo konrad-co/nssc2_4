@@ -83,6 +83,14 @@ def nodeToCoordinate(node,N,L, V=0):
 		x_reg = j * L / (N - 1)
 		B = y_reg / (2*L)
 		return np.array([i * L / (N - 1), x_reg * ((B * x_reg) / L - B + 1)])
+	if V==3:
+		j=(node%N)
+		i=(node-j)/N
+		y_n = i / (N - 1)
+		x_n = j / (N - 1)
+		angle = x_n * (np.pi / 4)
+		radius = L + y_n * L
+		return np.array([radius * np.sin(angle), 2*L - radius * np.cos(angle)])
 	else:
 		j=(node%N)
 		i=(node-j)/N
